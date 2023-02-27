@@ -15,9 +15,8 @@ contract LeveragedVaultTest is Test {
     address daiOwner = 0xdDb108893104dE4E1C6d0E47c42237dB4E617ACc;
     IUniswapV2Router02 uniswap;
     Whitelist whitelist;
-    LeveragedVaultFactory logris;
     address daiVaultAddress = 0xdA816459F1AB5631232FE5e97a05BBBb94970c95;
-    Deposit depositor;
+    Depositor depositor;
 
     function setUp() public {
         user1 = vm.addr(1);
@@ -25,9 +24,8 @@ contract LeveragedVaultTest is Test {
         
         alchemist = IAlchemistV2(0x5C6374a2ac4EBC38DeA0Fc1F8716e5Ea1AdD94dd);
         address alchemixOwner = alchemist.admin();
-        dai = iDAI(0x6B175474E89094C44Da98b954EedeAC495271d0F);
-        logris = new LeveragedVaultFactory();
-        
+        dai = IERC20Mintable(0x6B175474E89094C44Da98b954EedeAC495271d0F);
+
         vm.deal(user1, 200 ether);
         address[] memory path = new address[](2);
         path[0] = weth;
@@ -36,7 +34,7 @@ contract LeveragedVaultTest is Test {
 
         vm.prank(user1);
         uniswap.swapExactETHForTokens{value:10 ether}(1, path, user1, block.timestamp + 10000);
-        depositor = new Deposit();
+        depositor = new Depositor();
         
         vm.prank(alchemixOwner);
         whitelist = Whitelist(alchemist.whitelist());
@@ -46,12 +44,9 @@ contract LeveragedVaultTest is Test {
 
     function testLeverageCall() public {
         vm.startPrank(user1);
-        dai.approve(address(depsitor), 100 ether);
+        dai.approve(address(depositor), 1000 ether);
         dai.transfer(address(depositor), 100 ether);
-        depositor.depositToAlchemix(100 ether);
+        depositor.depositToAlchemix(10 ether);
         vm.stopPrank();
-        ILeveragedVault vault = ILeveragedVault(logris.vaults(daiVaultAddress));
-
-        
     }
 }

